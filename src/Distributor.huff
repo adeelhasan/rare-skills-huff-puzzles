@@ -1,4 +1,4 @@
- 
+ #include "./Console.huff"
 /** 
  *  DISTRIBUTE HUFF EXERCISE
  *  
@@ -10,9 +10,52 @@
  *  NOTICE: The contract should revert when an unrecognized function is called
  */
 
+ /*
+Logs:
+  0x6138889b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000bab0000000000000000000000000000000000000000000000000000000000000beb0000000000000000000000000000000000000000000000000000000000000bed0000000000000000000000000000000000000000000000000000000000000bad
+ */
+
  #define function distribute(address[]) payable returns()
 
 
  #define macro MAIN() = takes(0) returns(0) {
+    //LOG_CALLDATA(0x00, calldatasize, 0x00)
+    0x00 calldataload 0xe0 shr
+    dup1 __FUNC_SIG(distribute) eq distributeJump jumpi
+
+    0x00 0x00 revert
+
+    distributeJump:
+        //check if anything was sent
+        callvalue 0x00 eq noValueJump jumpi pop
+
+        0x24 calldataload    // counter
+        dup1 callvalue div // counter, valuePerAddress
+        0x24    // counter, valuePerAddress, starting offset
+    startOfLoopJump:
+        0x20 add dup1 calldataload // counter, valuePerAddress, offset, loadedAddress
+        0x00 0x00 0x00 0x00 dup7 dup6 gas call // counter, valuePerAddress, offset, loadedAddress, callResult
+        pop pop // counter, valuePerAddress, offset
+        //check if loop is done
+        0x01 dup4 // counter, valuePerAddress, offset, 0x01, counter
+        sub // counter, valuePerAddress, offset, counter-1
+        swap3
+        pop
+        //LOG_STACK_9(0x2000)
+        dup3
+        iszero 
+        loopCompleteJump jumpi
+               //LOG_STACK_9(0x2000) 
+        
+        //LOG_STACK_9(0x2000)
+        startOfLoopJump jump
+        //0x20 add dup1 calldataload // addressCount, valuePerAddress, offset, loadedAddress
+        //0x00 0x00 0x00 0x00 dup7 dup6 gas call // addressCount, valuePerAddress, offset, loadedAddress, callResult
+    loopCompleteJump:
+
+        stop
+
+    noValueJump:
+        0x00 0x00 revert
    
  }

@@ -31,7 +31,6 @@ contract MultiplyTest is Test, NonMatchingSelectorHelper {
             0,
             "Multiply(0, 1) expected to return 0"
         );
-
         vm.expectRevert();
         multiply.multiply(2, type(uint256).max);
     }

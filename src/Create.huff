@@ -11,7 +11,34 @@
 
  #define function makeContract() payable returns(address)
 
+  /*
 
+#define macro MAIN() = takes(0) returns(0) {
+    // store data in memory at offset 0
+    0xcaffe
+    0x00
+    mstore
+
+    0x20
+    0x00
+    return
+}
+
+  huffc src/ReturnsFixedData.huff -b
+  600c8060093d393df3620caffe60005260206000f3
+  */
+ 
  #define macro MAIN() = takes(0) returns(0) {
-    
+ 
+      0x00 calldataload 0xe0 shr
+      dup1 __FUNC_SIG(makeContract) eq deployJump jumpi
+
+      0x00 0x00 revert
+
+      deployJump:
+      __RIGHTPAD(0x600c8060093d393df3620caffe60005260206000f3) 0x00 mstore
+
+      0x2a 0x00 0x00 create 
+      0x00 mstore
+      0x20 0x00 return
  }

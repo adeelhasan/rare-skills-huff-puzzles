@@ -16,7 +16,7 @@ contract DistributeTest is Test, NonMatchingSelectorHelper {
         distributor = Distributor(HuffDeployer.config().deploy("Distributor"));
     }
 
-    function testDistribute() public {
+     function testDistribute() public {
         address[] memory addresses = new address[](4);
         addresses[0] = address(0xBab);
         addresses[1] = address(0xBeb);
@@ -53,7 +53,7 @@ contract DistributeTest is Test, NonMatchingSelectorHelper {
             "balance of distribute contract is not 0 ether"
         );
     }
-
+ 
     /// @notice Test that a non-matching selector reverts
     function testNonMatchingSelector(bytes32 callData) public {
         bytes4[] memory func_selectors = new bytes4[](1);

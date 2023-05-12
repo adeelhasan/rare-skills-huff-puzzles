@@ -13,5 +13,34 @@
 
 
 #define macro MAIN() = takes(0) returns(0) {
+    // Get the function signature from the calldata
+    0x00 calldataload        // [calldata @ 0x00]
+    0xE0 shr                 // [func_sig (calldata @ 0x00 >> 0xE0)]
 
+    // Check if the function signature in the calldata is
+    // a match to our function definition.
+    __FUNC_SIG(multiply)
+    eq 
+    multiplyJump jumpi
+
+    // Revert if no function signature matched
+    0x00 0x00 revert
+
+    multiplyJump:
+        0x04 calldataload   // [a]
+        dup1 returndatasize eq success jumpi
+        0x24 calldataload    // [a,b]
+        dup1    //[a,b,b]
+        dup3 mul //[a,b,b x a]
+        dup3 //[a,b,b x a,a]
+        dup2 //[a,b,b x a,a, b x a]
+        div //[a,b,b x a, (b x a) / a]
+        dup3 //[a,b,b x a, (b x a) / a,b]
+        eq success jumpi
+
+        0x00 0x00 revert
+     
+    success:
+        returndatasize mstore
+        0x20 returndatasize return
 }
